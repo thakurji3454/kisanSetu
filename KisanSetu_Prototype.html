@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KisanSetu — Farm to Payment Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE6D3;
+    --paper-dim:#e6dcc4;
+    --ink:#20241E;
+    --ink-soft:#4b4f43;
+    --gold:#C89B3C;
+    --gold-deep:#9c7826;
+    --green:#2F5233;
+    --green-soft:#3f6a45;
+    --risk:#8B3A2B;
+    --line: rgba(32,36,30,0.14);
+    --card: #F7F1E1;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(32,36,30,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 60px;}
+
+  /* Header */
+  header{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:16px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:18px; margin-bottom:26px;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:42px;height:42px;border-radius:50%;
+    background:conic-gradient(var(--green) 0deg 120deg, var(--gold) 120deg 240deg, var(--ink) 240deg 360deg);
+    flex-shrink:0;
+  }
+  .brand h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; margin:0; letter-spacing:-0.01em;
+  }
+  .brand p{margin:2px 0 0; font-size:0.85rem; color:var(--ink-soft);}
+  .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--ink-soft);
+    text-align:right; max-width:320px; line-height:1.5;
+  }
+
+  /* Stats bar */
+  .stats{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--ink); border:1px solid var(--ink);
+    margin-bottom:30px; border-radius:6px; overflow:hidden;
+  }
+  .stat{background:var(--card); padding:16px 18px;}
+  .stat .num{font-family:'Fraunces',serif; font-size:1.7rem; font-weight:600; color:var(--green);}
+  .stat .lbl{font-size:0.78rem; color:var(--ink-soft); margin-top:2px;}
+
+  /* Main grid */
+  .stage{
+    display:grid;
+    grid-template-columns: 200px 340px 1fr;
+    gap:22px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .stage{grid-template-columns:1fr;}
+  }
+
+  /* Step rail */
+  .rail{display:flex; flex-direction:column; gap:6px;}
+  .step-btn{
+    display:flex; align-items:center; gap:10px;
+    background:transparent; border:none; text-align:left;
+    padding:10px 8px; cursor:pointer; border-radius:6px;
+    font-family:'Inter'; font-size:0.85rem; color:var(--ink-soft);
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .step-btn .idx{
+    width:26px;height:26px;border-radius:50%;
+    border:1.5px solid var(--ink-soft); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono'; font-size:0.72rem;
+  }
+  .step-btn.active{background:var(--ink); color:var(--paper);}
+  .step-btn.active .idx{border-color:var(--gold); background:var(--gold); color:var(--ink);}
+  .step-btn.done .idx{border-color:var(--green); color:var(--green);}
+  .step-btn:not(.active):hover{background:var(--paper-dim);}
+  @media (max-width:980px){
+    .rail{flex-direction:row; overflow-x:auto; padding-bottom:6px;}
+    .step-btn{white-space:nowrap;}
+  }
+
+  /* Phone mock */
+  .phone-shell{
+    background:var(--ink); border-radius:34px; padding:12px;
+    box-shadow: 0 18px 40px rgba(32,36,30,0.25);
+    width:100%; max-width:340px; margin:0 auto;
+  }
+  .phone-screen{
+    background:var(--card); border-radius:22px; min-height:520px;
+    padding:20px 18px 18px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .phone-notch{
+    width:70px;height:6px;background:var(--paper-dim);border-radius:4px;
+    margin:0 auto 8px;
+  }
+  .screen-eyebrow{
+    font-family:'IBM Plex Mono'; font-size:0.68rem; letter-spacing:0.03em;
+    color:var(--gold-deep); text-transform:uppercase;
+  }
+  .screen-title{font-family:'Fraunces',serif; font-weight:600; font-size:1.25rem; margin:2px 0 0;}
+  .screen-sub{font-size:0.82rem; color:var(--ink-soft); margin-top:2px; line-height:1.4;}
+
+  .field{
+    background:var(--paper); border:1px solid var(--line); border-radius:10px;
+    padding:11px 13px;
+  }
+  .field .k{font-size:0.7rem; color:var(--ink-soft); font-family:'IBM Plex Mono';}
+  .field .v{font-family:'IBM Plex Mono'; font-size:0.95rem; font-weight:500; margin-top:2px;}
+
+  .map-box{
+    background:#dfe7d9; border-radius:10px; height:130px; position:relative; overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .plot{
+    position:absolute; inset:16px; border:2px dashed var(--green); border-radius:6px;
+  }
+  .plot::after{
+    content:'GEO-FENCED'; position:absolute; bottom:4px; right:6px;
+    font-family:'IBM Plex Mono'; font-size:0.55rem; color:var(--green-soft);
+  }
+  .sat-dot{
+    position:absolute; width:8px; height:8px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 0 5px rgba(200,155,60,0.25);
+    animation:pulse 1.6s infinite ease-in-out;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+
+  .voice-bubble{
+    background:var(--green); color:#fff; padding:11px 14px; border-radius:14px 14px 14px 4px;
+    font-size:0.85rem; max-width:88%;
+  }
+  .mic{
+    width:56px;height:56px;border-radius:50%; background:var(--gold);
+    display:flex;align-items:center;justify-content:center; margin:6px auto 0;
+    box-shadow:0 0 0 0 rgba(200,155,60,0.5); animation:mic-pulse 1.8s infinite;
+  }
+  @keyframes mic-pulse{
+    0%{box-shadow:0 0 0 0 rgba(200,155,60,0.45);}
+    70%{box-shadow:0 0 0 16px rgba(200,155,60,0);}
+    100%{box-shadow:0 0 0 0 rgba(200,155,60,0);}
+  }
+
+  .grade-meter{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:12px;}
+  .grade-bar{height:10px; background:var(--paper-dim); border-radius:6px; overflow:hidden; margin-top:8px;}
+  .grade-fill{height:100%; background:linear-gradient(90deg, var(--gold), var(--green)); width:0%; transition:width 1.1s ease;}
+
+  .qr{
+    width:74px;height:74px; margin:0 auto; background:
+      repeating-linear-gradient(0deg, var(--ink) 0 4px, transparent 4px 8px),
+      repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px);
+    background-blend-mode:multiply; border:6px solid #fff;
+  }
+
+  .route{
+    background:var(--paper); border:1px solid var(--line); border-radius:10px; height:90px;
+    position:relative; overflow:hidden;
+  }
+  .route-line{
+    position:absolute; top:50%; left:10%; right:10%; height:2px; background:var(--ink-soft); opacity:0.4;
+  }
+  .truck{
+    position:absolute; top:calc(50% - 10px); font-size:1.1rem;
+    animation:drive 3s linear infinite;
+  }
+  @keyframes drive{0%{left:8%;}100%{left:82%;}}
+  .lock-tag{
+    display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono'; font-size:0.72rem;
+    background:var(--green); color:#fff; padding:4px 9px; border-radius:20px; width:fit-content;
+  }
+
+  .wallet-card{
+    background:linear-gradient(135deg, var(--ink) 0%, #33392c 100%); color:var(--paper);
+    border-radius:12px; padding:16px; position:relative;
+  }
+  .wallet-card .lbl{font-family:'IBM Plex Mono'; font-size:0.68rem; opacity:0.75;}
+  .wallet-card .amt{font-family:'Fraunces',serif; font-size:1.9rem; font-weight:600; color:var(--gold); margin-top:4px;}
+  .wallet-card .hash{font-family:'IBM Plex Mono'; font-size:0.62rem; opacity:0.6; margin-top:10px; word-break:break-all;}
+
+  .risk-badge{
+    font-family:'IBM Plex Mono'; font-size:0.72rem; padding:4px 10px; border-radius:20px;
+    display:inline-block; font-weight:600;
+  }
+  .risk-low{background:rgba(47,82,51,0.15); color:var(--green);}
+  .risk-high{background:rgba(139,58,43,0.15); color:var(--risk);}
+
+  .compare-row{display:flex; justify-content:space-between; font-size:0.8rem; padding:6px 0; border-bottom:1px dashed var(--line);}
+  .compare-row:last-child{border-bottom:none;}
+
+  .btn-row{display:flex; gap:10px; margin-top:auto; padding-top:6px;}
+  .btn{
+    flex:1; padding:11px; border-radius:9px; border:none; font-family:'Inter'; font-weight:600;
+    font-size:0.85rem; cursor:pointer; transition:transform 0.1s ease, opacity 0.15s ease;
+  }
+  .btn-primary{background:var(--ink); color:var(--paper);}
+  .btn-primary:hover{opacity:0.88;}
+  .btn-ghost{background:transparent; border:1.5px solid var(--ink-soft); color:var(--ink-soft);}
+  .btn:active{transform:scale(0.97);}
+  .btn:disabled{opacity:0.35; cursor:not-allowed;}
+
+  /* Ledger */
+  .ledger{
+    background:var(--ink); color:var(--paper); border-radius:12px; padding:18px;
+    max-height:600px; display:flex; flex-direction:column;
+  }
+  .ledger h3{
+    font-family:'IBM Plex Mono'; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em;
+    margin:0 0 12px; color:var(--gold); display:flex; align-items:center; gap:8px;
+  }
+  .dot-live{width:7px;height:7px;border-radius:50%;background:var(--green-soft); animation:blink 1.4s infinite;}
+  @keyframes blink{50%{opacity:0.3;}}
+  .ledger-scroll{overflow-y:auto; flex:1; padding-right:4px; max-height:480px;}
+  .entry{
+    font-family:'IBM Plex Mono'; font-size:0.72rem; line-height:1.6;
+    border-left:2px solid var(--gold); padding:7px 0 7px 12px; margin-bottom:4px;
+    opacity:0; animation:entry-in 0.4s ease forwards;
+  }
+  @keyframes entry-in{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  .entry .t{color:#9aa08d;}
+  .entry .hash{color:var(--gold);}
+  .empty-ledger{font-family:'IBM Plex Mono'; font-size:0.75rem; color:#8a8f7d; padding:20px 0; text-align:center;}
+
+  .reset-row{margin-top:14px; text-align:right;}
+  .reset-btn{
+    background:none; border:none; color:var(--ink-soft); font-family:'IBM Plex Mono'; font-size:0.72rem;
+    cursor:pointer; text-decoration:underline;
+  }
+
+  footer{
+    margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:0.75rem; color:var(--ink-soft); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>KisanSetu</h1>
+        <p>Farm to payment — one transparent, traced cycle</p>
+      </div>
+    </div>
+    <div class="tagline">PROTOTYPE — click through the six-step<br>digital procurement workflow below</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="statGrain">0.0 q</div><div class="lbl">Grain tracked on-chain</div></div>
+    <div class="stat"><div class="num" id="statPaid">₹0</div><div class="lbl">Disbursed direct to farmer</div></div>
+    <div class="stat"><div class="num" id="statCut">0</div><div class="lbl">Middlemen touchpoints</div></div>
+  </div>
+
+  <div class="stage">
+    <div class="rail" id="rail"></div>
+
+    <div class="phone-shell">
+      <div class="phone-screen" id="screen"></div>
+    </div>
+
+    <div class="ledger">
+      <h3><span class="dot-live"></span>Live Ledger — Block Records</h3>
+      <div class="ledger-scroll" id="ledgerScroll">
+        <div class="empty-ledger">No blocks yet. Step through the workflow to write records to the chain.</div>
+      </div>
+      <div class="reset-row"><button class="reset-btn" onclick="resetDemo()">Reset demo</button></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>KisanSetu — Policy &amp; Technical Action Blueprint prototype</span>
+    <span>Simulated data only — no real AgriStack, blockchain, or CBDC systems are connected</span>
+  </footer>
+</div>
+
+<script>
+const steps = [
+  {
+    title: "Farm & Sowing Stage",
+    eyebrow: "Step 1 · AgriStack + AI Satellite",
+    sub: "Every farmer's land gets a unique AgriStack ID. Satellites scan the plot live before harvest.",
+    ledgerLabel: "AGRISTACK VERIFIED",
+    render: () => `
+      <div class="field"><div class="k">AGRISTACK ID</div><div class="v">AS-2026-KN-08421</div></div>
+      <div class="field"><div class="k">FARMER</div><div class="v">Ramesh Kannojia · 2.1 acres</div></div>
+      <div class="map-box">
+        <div class="plot"></div>
+        <div class="sat-dot" style="top:22px; left:40px;"></div>
+      </div>
+      <div class="field"><div class="k">SATELLITE YIELD CAP</div><div class="v">38.6 quintals (+12% buffer)</div></div>
+    `
+  },
+  {
+    title: "Token & Scheduling",
+    eyebrow: "Step 2 · Bhashini Voice Bot",
+    sub: "Farmer books a delivery slot by phone call, SMS, or WhatsApp — in their own dialect.",
+    ledgerLabel: "TOKEN ISSUED",
+    render: () => `
+      <div class="voice-bubble">"आपका टोकन नंबर 214 है। कल सुबह 9 बजे मंडी पहुँचें।"</div>
+      <div class="mic">🎙️</div>
+      <div class="field"><div class="k">TOKEN</div><div class="v">#214 · Slot 09:00 AM, Tue</div></div>
+      <div class="field"><div class="k">CENTER</div><div class="v">PACS Purchase Centre, Bareilly</div></div>
+    `
+  },
+  {
+    title: "Purchase Center (PACS)",
+    eyebrow: "Step 3 · AI Scanner + Weighbridge",
+    sub: "A sample gets a Digital Quality Grade in 15 seconds. The weighbridge sends weight straight to the server.",
+    ledgerLabel: "QUALITY + WEIGHT LOGGED",
+    render: () => `
+      <div class="grade-meter">
+        <div class="k" style="font-family:'IBM Plex Mono'; font-size:0.7rem; color:var(--ink-soft);">DIGITAL QUALITY GRADE</div>
+        <div class="grade-bar"><div class="grade-fill" id="gradeFill"></div></div>
+        <div style="font-family:'IBM Plex Mono'; font-size:0.75rem; margin-top:6px;">Grade A · 11.2% moisture</div>
+      </div>
+      <div class="field"><div class="k">WEIGHBRIDGE READING</div><div class="v">38.4 quintals</div></div>
+      <div class="qr"></div>
+      <div style="text-align:center; font-family:'IBM Plex Mono'; font-size:0.68rem; color:var(--ink-soft);">Bag QR: AC-9F3C-2214</div>
+    `,
+    after: () => setTimeout(()=>{ const el=document.getElementById('gradeFill'); if(el) el.style.width='84%'; }, 80)
+  },
+  {
+    title: "Transport & Milling",
+    eyebrow: "Step 4 · GPS E-Lock + Blockchain",
+    sub: "Trucks are tracked by GPS with digital e-locks. No unauthorized unloading on the way.",
+    ledgerLabel: "GPS TRANSIT LOGGED",
+    render: () => `
+      <div class="lock-tag">🔒 E-LOCK SEALED</div>
+      <div class="route">
+        <div class="route-line"></div>
+        <div class="truck">🚚</div>
+      </div>
+      <div class="field"><div class="k">ROUTE</div><div class="v">PACS Bareilly → FCI Mill #7</div></div>
+      <div class="field"><div class="k">GPS</div><div class="v">28.354°N, 79.427°E</div></div>
+    `
+  },
+  {
+    title: "Instant Payment",
+    eyebrow: "Step 5 · Escrow Smart Contract",
+    sub: "The moment the mill gate scans the QR, money moves into the farmer's Aadhaar-linked wallet.",
+    ledgerLabel: "PAYMENT SETTLED",
+    render: () => `
+      <div class="wallet-card">
+        <div class="lbl">FARMER CBDC WALLET</div>
+        <div class="amt" id="walletAmt">₹0</div>
+        <div class="hash">tx:0x7fA1...e29C4 · settled in 4.2s</div>
+      </div>
+      <div class="field"><div class="k">MSP RATE APPLIED</div><div class="v">₹2,275 / quintal</div></div>
+      <div class="field"><div class="k">MIDDLEMEN CUT</div><div class="v">₹0 — zero commission</div></div>
+    `,
+    after: () => {
+      const el = document.getElementById('walletAmt');
+      if(!el) return;
+      let target = 38.4*2275, cur = 0;
+      const step = target/30;
+      const t = setInterval(()=>{
+        cur += step;
+        if(cur>=target){cur=target; clearInterval(t);}
+        el.textContent = '₹' + Math.round(cur).toLocaleString('en-IN');
+      }, 30);
+    }
+  },
+  {
+    title: "Audit & Tax Check",
+    eyebrow: "Step 6 · AI–ITR Cross-Verification",
+    sub: "AI checks large 'agricultural income' exemption claims against real AgriStack + CBDC records.",
+    ledgerLabel: "CROSS-CHECK COMPLETE",
+    render: () => `
+      <div class="field">
+        <div class="k">CLAIM UNDER REVIEW</div>
+        <div class="v">Agri-income exemption · Firm: Suvidha Traders</div>
+      </div>
+      <div class="grade-meter">
+        <div class="compare-row"><span>AgriStack land on record</span><span>0.0 acres</span></div>
+        <div class="compare-row"><span>CBDC farm-sale records</span><span>None found</span></div>
+        <div class="compare-row"><span>Declared agri-income</span><span>₹18,40,000</span></div>
+      </div>
+      <span class="risk-badge risk-high">HIGH RISK — FLAGGED</span>
+    `
+  }
+];
+
+let current = 0;
+let maxUnlocked = 0;
+let grainTotal = 0, paidTotal = 0, cutTotal = 6;
+
+function renderRail(){
+  const rail = document.getElementById('rail');
+  rail.innerHTML = steps.map((s,i)=>{
+    let cls = 'step-btn';
+    if(i===current) cls+=' active';
+    else if(i<=maxUnlocked) cls+=' done';
+    return `<button class="${cls}" onclick="goTo(${i})" ${i>maxUnlocked+1?'disabled style="opacity:0.4;cursor:not-allowed;"':''}>
+      <span class="idx">${i+1}</span><span>${s.title}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderScreen(){
+  const s = steps[current];
+  const screen = document.getElementById('screen');
+  screen.innerHTML = `
+    <div class="phone-notch"></div>
+    <div class="screen-eyebrow">${s.eyebrow}</div>
+    <div class="screen-title">${s.title}</div>
+    <div class="screen-sub">${s.sub}</div>
+    ${s.render()}
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(${current-1})" ${current===0?'disabled':''}>Back</button>
+      <button class="btn btn-primary" onclick="advance()">${current===steps.length-1 ? 'Finish cycle' : 'Confirm & continue'}</button>
+    </div>
+  `;
+  if(s.after) s.after();
+}
+
+function writeLedger(stepIndex){
+  const scroll = document.getElementById('ledgerScroll');
+  const empty = scroll.querySelector('.empty-ledger');
+  if(empty) empty.remove();
+  const s = steps[stepIndex];
+  const now = new Date();
+  const time = now.toTimeString().slice(0,8);
+  const hash = '0x' + Math.random().toString(16).slice(2,10).toUpperCase();
+  const div = document.createElement('div');
+  div.className = 'entry';
+  div.innerHTML = `<span class="t">[${time}]</span> BLOCK #${4820+stepIndex} — ${s.ledgerLabel}<br><span class="hash">hash ${hash}</span> · step ${stepIndex+1}/${steps.length}`;
+  scroll.appendChild(div);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+function updateStats(){
+  document.getElementById('statGrain').textContent = grainTotal.toFixed(1) + ' q';
+  document.getElementById('statPaid').textContent = '₹' + paidTotal.toLocaleString('en-IN');
+  document.getElementById('statCut').textContent = cutTotal;
+}
+
+function goTo(i){
+  if(i<0 || i>maxUnlocked+ (i<=current?0:1) ) { if(i>maxUnlocked) return; }
+  if(i>maxUnlocked && i!==current) return;
+  current = i;
+  renderRail();
+  renderScreen();
+}
+
+function advance(){
+  writeLedger(current);
+  if(current===2) grainTotal = 38.4;
+  if(current===4) paidTotal = Math.round(38.4*2275);
+  updateStats();
+
+  if(current < steps.length-1){
+    current += 1;
+    if(current>maxUnlocked) maxUnlocked = current;
+    renderRail();
+    renderScreen();
+  } else {
+    renderRail();
+    const screen = document.getElementById('screen');
+    screen.innerHTML += `<div style="text-align:center; font-family:'IBM Plex Mono'; font-size:0.75rem; color:var(--green); margin-top:8px;">✓ Full cycle recorded on-chain</div>`;
+  }
+}
+
+function resetDemo(){
+  current = 0; maxUnlocked = 0; grainTotal = 0; paidTotal = 0;
+  document.getElementById('ledgerScroll').innerHTML = '<div class="empty-ledger">No blocks yet. Step through the workflow to write records to the chain.</div>';
+  updateStats();
+  renderRail();
+  renderScreen();
+}
+
+renderRail();
+renderScreen();
+updateStats();
+</script>
+</body>
+</html>
